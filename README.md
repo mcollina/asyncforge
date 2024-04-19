@@ -50,6 +50,16 @@ setImmediate(() => {
   console.log('a', a())
   console.log('b', b())
 })
+
+const c = memo("myKeyC");
+const d = memo("myKeyD");
+
+setAll({
+  [c.key]: 42,
+  [d.key]: 24,
+});
+
+console.log(c(), d()); // 42 24
 ```
 
 ## License
