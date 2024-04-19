@@ -6,7 +6,7 @@
   "scripts": {
     "test": "standard && borp --coverage"
   },
-  "keywords": [],
+  "keywords": ["async", "local", "storage", "asynclocalstorage", "memo", "forge", "singleton"],
   "author": "Matteo Collina <hello@matteocollina.com>",
   "license": "MIT",
   "devDependencies": {

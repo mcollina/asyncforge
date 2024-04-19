@@ -1,20 +1,4 @@
-# asyncforge
-
-`asyncforge` allows you to remove singletons from your codebase with the
-use of [`AsyncLocalStorage`](https://nodejs.org/api/async_context.html#class-asynclocalstorage).
-
-It provides helpers to build Next.js-style helpers to access "singletons". 
-
-## Install
-
-```sh
-npm i asyncforge
-```
-
-## Usage
-
-```js
-import { start, forge, memo } from 'asyncforge'
+import { start, forge, memo } from './asyncforge.js'
 
 const a = forge((config) => {
   return {
@@ -50,8 +34,3 @@ setImmediate(() => {
   console.log('a', a())
   console.log('b', b())
 })
-```
-
-## License
-
-MIT
