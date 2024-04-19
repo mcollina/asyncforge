@@ -14,7 +14,11 @@ let forgeCounter = 0
 function forge (fn) {
   const sym = Symbol('forge.' + (fn.name || forgeCounter++))
   return function () {
-    const store = asyncLocalStorage.getStore()
+    let store = asyncLocalStorage.getStore()
+    if (!store) {
+      store = Object.create(null)
+      asyncLocalStorage.enterWith(store)
+    }
     if (store[sym]) {
       return store[sym]
     }
@@ -32,12 +36,12 @@ function memo (name) {
 
   function get () {
     const store = asyncLocalStorage.getStore()
-    return store[sym]
+    return store?.[sym]
   }
 
   function set (value) {
     let store = asyncLocalStorage.getStore()
-    store = Object.create(store)
+    store = Object.create(store || null)
     store[sym] = value
     asyncLocalStorage.enterWith(store)
   }

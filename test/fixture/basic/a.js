@@ -4,6 +4,6 @@ const { forge } = require('../../../')
 
 module.exports = forge((config) => {
   return {
-    value: config.foo
+    value: config?.foo
   }
 })

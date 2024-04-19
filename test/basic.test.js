@@ -6,6 +6,18 @@ const { start, forge } = require('../')
 const { setImmediate: immediate } = require('node:timers/promises')
 const tspl = require('@matteo.collina/tspl')
 
+test('forge', async (t) => {
+  const { a, b } = require('./fixture/basic')
+
+  assert.deepEqual(a(), { value: undefined })
+  assert.equal(a(), a())
+  assert.deepEqual(b(), {
+    fromA: {
+      value: undefined
+    }
+  })
+})
+
 test('start and forge', async (t) => {
   const { a, b } = require('./fixture/basic')
 
