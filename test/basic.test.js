@@ -9,6 +9,10 @@ const tspl = require('@matteo.collina/tspl')
 test('start and forge', async (t) => {
   const { a, b } = require('./fixture/basic')
 
+  start({
+    foo: 'bar'
+  })
+
   assert.deepEqual(a(), { value: 'bar' })
   assert.equal(a(), a())
   assert.deepEqual(b(), {
@@ -20,6 +24,22 @@ test('start and forge', async (t) => {
   await immediate()
 
   assert.deepEqual(a(), { value: 'bar' })
+
+  start({
+    foo: 'baz'
+  })
+
+  assert.deepEqual(a(), { value: 'baz' })
+  assert.equal(a(), a())
+  assert.deepEqual(b(), {
+    fromA: {
+      value: 'baz'
+    }
+  })
+
+  await immediate()
+
+  assert.deepEqual(a(), { value: 'baz' })
 })
 
 test('start and forge with different config', async (t) => {

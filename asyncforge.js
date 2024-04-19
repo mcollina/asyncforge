@@ -2,7 +2,7 @@
 
 const { AsyncLocalStorage } = require('node:async_hooks')
 
-const asyncLocalStorage = new AsyncLocalStorage();
+const asyncLocalStorage = new AsyncLocalStorage()
 
 function start (config) {
   const store = Object.create(null)

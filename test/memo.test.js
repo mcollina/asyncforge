@@ -1,9 +1,7 @@
 'use strict'
 
 const { test } = require('node:test')
-const assert = require('node:assert/strict')
-const { start, forge, memo } = require('../')
-const { setImmediate: immediate } = require('node:timers/promises')
+const { start, memo } = require('../')
 const tspl = require('@matteo.collina/tspl')
 
 test('memo', async (t) => {
