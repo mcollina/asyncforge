@@ -43,10 +43,22 @@ function memo (name) {
   }
 
   get.set = set
+  get.key = sym
 
   return get
+}
+
+function setAll (memos) {
+  let store = asyncLocalStorage.getStore()
+  store = Object.create(store)
+  const keys = Object.getOwnPropertySymbols(memos)
+  for (const key of keys) {
+    store[key] = memos[key]
+  }
+  asyncLocalStorage.enterWith(store)
 }
 
 module.exports.start = start
 module.exports.forge = forge
 module.exports.memo = memo
+module.exports.setAll = setAll
