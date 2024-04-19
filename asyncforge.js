@@ -54,7 +54,7 @@ function memo (name) {
 
 function setAll (memos) {
   let store = asyncLocalStorage.getStore()
-  store = Object.create(store)
+  store = Object.create(store || null)
   const keys = Object.getOwnPropertySymbols(memos)
   for (const key of keys) {
     store[key] = memos[key]
