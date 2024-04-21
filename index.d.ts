@@ -1,17 +1,23 @@
-type ForgeCallback<T, U> = {
-  (config: T): U;
-  name?: string;
-};
+declare namespace asyncforge {
+  interface AsyncForgeConfig {}
 
-export function start<T extends unknown>(config: T): void;
-export function forge<T extends unknown, U extends unknown = unknown>(
-  fn: ForgeCallback<T, U>
-): () => ReturnType<ForgeCallback<T, U>>;
-export function memo<T extends unknown>(
-  name?: string
-): {
-  (): T;
-  key: symbol;
-  set: (value: T) => void;
-};
-export function setAll(memos: Record<symbol, unknown>): void;
+  type ForgeCallback<T> = {
+    (config: AsyncForgeConfig): T;
+    name?: string;
+  };
+
+  export function start(config: AsyncForgeConfig): void;
+  export function forge<T extends unknown>(
+    fn: ForgeCallback<T>
+  ): () => ReturnType<ForgeCallback<T>>;
+  export function memo<T extends unknown>(
+    name?: string
+  ): {
+    (): T;
+    key: symbol;
+    set: (value: T) => void;
+  };
+  export function setAll(memos: Record<symbol, unknown>): void;
+}
+
+export = asyncforge

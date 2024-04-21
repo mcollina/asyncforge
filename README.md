@@ -67,8 +67,25 @@ console.log(c(), d()); // 42 24
 You can call the `asyncforge` functions in a type-safe way:
 
 ```ts
-// This will return the type { foo: string }
-forge(() => ({ foo: "bar" }))()
+// You can define the `AsyncForgeConfig` interface so that `start` and `forge` can use it (TS module augmentation)
+declare module "asyncforge" {
+  interface AsyncForgeConfig {
+    foo: string;
+    baz: number;
+  }
+}
+
+// This is correct
+start({ foo: "bar", baz: 42 })
+
+// TypeScript will complain, since it's not following the definition of AsyncForgeConfig
+start({ wrong: true })
+
+// Valid
+forge(({ baz: data, foo: value }) => ({ data, value }));
+
+// Invalid
+forge(({ invalid }) => ({ invalid }));
 
 const memoNum = memo<number>();
 
