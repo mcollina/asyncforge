@@ -62,6 +62,51 @@ setAll({
 console.log(c(), d()); // 42 24
 ```
 
+## TypeScript
+
+You can call the `asyncforge` functions in a type-safe way:
+
+```ts
+// You can define the `AsyncForgeConfig` interface so that `start` and `forge` can use it (TS module augmentation)
+declare module "asyncforge" {
+  interface AsyncForgeConfig {
+    foo: string;
+    baz: number;
+  }
+}
+
+// This is correct
+start({ foo: "bar", baz: 42 })
+
+// TypeScript will complain, since it's not following the definition of AsyncForgeConfig
+start({ wrong: true })
+
+// Valid
+forge(({ baz: data, foo: value }) => ({ data, value }));
+
+// Invalid
+forge(({ invalid }) => ({ invalid }));
+
+const memoNum = memo<number>();
+
+// This is okay for TypeScript, since you're passing a number
+memoNum.set(123);
+
+// This will not build
+memoNum.set('wrong');
+
+// The `result` var will be of type `number`
+const result = memoNum()
+
+const test = memo<string>();
+
+// This is correct, since `test.key` is a `symbol`
+setAll({ [test.key]: 42 });
+
+// This will fail
+setAll({ 'wrong': 42 });
+```
+
 ## License
 
 MIT
