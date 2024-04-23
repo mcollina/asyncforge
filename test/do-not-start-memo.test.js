@@ -8,7 +8,7 @@ test('memo without start', async (t) => {
   const p = tspl(t, { plan: 6 })
   const a = memo()
 
-  p.deepStrictEqual(a(), undefined)
+  p.throws(() => a())
   a.set({ value: 'bar' })
   p.deepStrictEqual(a(), { value: 'bar' })
 
@@ -42,7 +42,7 @@ test('nested', async (t) => {
   const p = tspl(t, { plan: 5 })
   const a = memo()
 
-  p.deepStrictEqual(a(), undefined)
+  p.throws(() => a())
   a.set({ value: 'bar' })
   p.deepStrictEqual(a(), { value: 'bar' })
 
