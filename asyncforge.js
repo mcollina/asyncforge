@@ -36,7 +36,10 @@ function memo (name) {
 
   function get () {
     const store = asyncLocalStorage.getStore()
-    return store?.[sym]
+    if (!store) {
+      throw new Error(`asyncforge store is not initialized for ${name}`)
+    }
+    return store[sym]
   }
 
   function set (value) {

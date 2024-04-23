@@ -8,7 +8,7 @@ test('memo without start', async (t) => {
   const p = tspl(t, { plan: 6 })
   const a = memo()
 
-  p.deepStrictEqual(a(), undefined)
+  p.throws(() => a(), { message: 'asyncforge store is not initialized for memo0' })
   a.set({ value: 'bar' })
   p.deepStrictEqual(a(), { value: 'bar' })
 
@@ -38,11 +38,20 @@ test('memo without start', async (t) => {
   await p.completed
 })
 
+test('memo with name', async (t) => {
+  const p = tspl(t, { plan: 1 })
+  const a = memo('custom-name')
+
+  p.throws(() => a(), { message: 'asyncforge store is not initialized for custom-name' })
+
+  await p.completed
+})
+
 test('nested', async (t) => {
   const p = tspl(t, { plan: 5 })
   const a = memo()
 
-  p.deepStrictEqual(a(), undefined)
+  p.throws(() => a(), { message: 'asyncforge store is not initialized for memo1' })
   a.set({ value: 'bar' })
   p.deepStrictEqual(a(), { value: 'bar' })
 
