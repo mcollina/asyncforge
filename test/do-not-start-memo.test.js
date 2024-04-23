@@ -38,6 +38,15 @@ test('memo without start', async (t) => {
   await p.completed
 })
 
+test('memo with name', async (t) => {
+  const p = tspl(t, { plan: 1 })
+  const a = memo('custom-name')
+
+  p.throws(() => a(), { message: 'asyncforge store is not initialized for custom-name' })
+
+  await p.completed
+})
+
 test('nested', async (t) => {
   const p = tspl(t, { plan: 5 })
   const a = memo()
