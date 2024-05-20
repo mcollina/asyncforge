@@ -15,5 +15,5 @@
     "standard": "^17.1.0",
     "tsd": "^0.31.0"
   },
-  "types": "index.d.ts"
+  "types": "asyncforge.d.ts"
 }
