@@ -5,8 +5,10 @@ const { start, memo } = require('../')
 const tspl = require('@matteo.collina/tspl')
 
 test('memo', async (t) => {
-  const p = tspl(t, { plan: 6 })
+  const p = tspl(t, { plan: 7 })
   const a = memo()
+
+  p.throws(a, /asyncforge store is not initialized for memo0/)
 
   start()
 
@@ -62,6 +64,38 @@ test('nested', async (t) => {
 
   setImmediate(() => {
     p.deepStrictEqual(a(), { value: 'bar' })
+  })
+
+  await p.completed
+})
+
+test('memo without start', async (t) => {
+  const p = tspl(t, { plan: 6 })
+  const a = memo()
+
+  p.throws(a, /asyncforge store is not initialized for memo\d+/)
+  a.set({ value: 'bar' })
+  p.deepStrictEqual(a(), { value: 'bar' })
+
+  setImmediate(() => {
+    p.deepStrictEqual(a(), { value: 'bar' })
+  })
+
+  queueMicrotask(() => {
+    p.deepStrictEqual(a(), { value: 'bar' })
+  })
+
+  p.deepStrictEqual(a(), { value: 'bar' })
+  a.set({ value: 'baz' })
+
+  p.deepEqual(a(), { value: 'baz' })
+
+  setImmediate(() => {
+    p.deepStrictEqual(a(), { value: 'baz' })
+  })
+
+  queueMicrotask(() => {
+    p.deepStrictEqual(a(), { value: 'baz' })
   })
 
   await p.completed

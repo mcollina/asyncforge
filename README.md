@@ -14,17 +14,12 @@ npm i asyncforge
 ## Usage
 
 ```js
-import { start, forge, memo } from 'asyncforge'
+import { memo } from 'asyncforge'
 
-const a = forge((config) => {
-  return {
-    value: config.foo
-  }
-})
-
+const a = memo()
 const b = memo()
 
-start({ foo: 'bar' })
+a.set(42)
 b.set(123)
 
 // simulate an event loop turn
@@ -41,7 +36,7 @@ setImmediate(() => {
   })
 })
 
-start({ foo: 'baz' })
+a.set(43)
 b.set(321)
 
 // simulate an event loop turn
@@ -50,16 +45,6 @@ setImmediate(() => {
   console.log('a', a())
   console.log('b', b())
 })
-
-const c = memo("myKeyC");
-const d = memo("myKeyD");
-
-setAll({
-  [c.key]: 42,
-  [d.key]: 24,
-});
-
-console.log(c(), d()); // 42 24
 ```
 
 ## TypeScript
@@ -67,26 +52,7 @@ console.log(c(), d()); // 42 24
 You can call the `asyncforge` functions in a type-safe way:
 
 ```ts
-// You can define the `AsyncForgeConfig` interface so that `start` and `forge` can use it (TS module augmentation)
-declare module "asyncforge" {
-  interface AsyncForgeConfig {
-    foo: string;
-    baz: number;
-  }
-}
-
-// This is correct
-start({ foo: "bar", baz: 42 })
-
-// TypeScript will complain, since it's not following the definition of AsyncForgeConfig
-start({ wrong: true })
-
-// Valid
-forge(({ baz: data, foo: value }) => ({ data, value }));
-
-// Invalid
-forge(({ invalid }) => ({ invalid }));
-
+import { start, memo, setAll } from "asyncforge";
 const memoNum = memo<number>();
 
 // This is okay for TypeScript, since you're passing a number

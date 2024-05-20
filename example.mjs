@@ -1,14 +1,9 @@
-import { start, forge, memo } from './asyncforge.js'
+import { memo } from './asyncforge.js'
 
-const a = forge((config) => {
-  return {
-    value: config.foo
-  }
-})
-
+const a = memo()
 const b = memo()
 
-start({ foo: 'bar' })
+a.set(42)
 b.set(123)
 
 // simulate an event loop turn
@@ -25,7 +20,7 @@ setImmediate(() => {
   })
 })
 
-start({ foo: 'baz' })
+a.set(43)
 b.set(321)
 
 // simulate an event loop turn
