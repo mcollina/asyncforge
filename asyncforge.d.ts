@@ -1,5 +1,10 @@
 declare namespace asyncforge {
-  export function start(): void;
+  interface Store {
+    run<T>(fn: () => T) : T;
+  }
+
+  export function create () : Store;
+
   export function memo<T extends unknown>(
     name?: string
   ): {
@@ -7,7 +12,6 @@ declare namespace asyncforge {
     key: symbol;
     set: (value: T) => void;
   };
-  export function setAll(memos: Record<symbol, unknown>): void;
 }
 
 export = asyncforge

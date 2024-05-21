@@ -14,36 +14,43 @@ npm i asyncforge
 ## Usage
 
 ```js
-import { memo } from 'asyncforge'
+import { create, memo } from 'asyncforge.js'
 
 const a = memo()
 const b = memo()
 
-a.set(42)
-b.set(123)
+const store = create()
 
-// simulate an event loop turn
-setImmediate(() => {
-  console.log('-- first event loop turn --')
-  console.log('a', a())
-  console.log('b', b())
+store.run(() => {
+  a.set(42)
+  b.set(123)
 
-  b.set(456)
+  // simulate an event loop turn
   setImmediate(() => {
-    console.log('-- third event loop turn --')
+    console.log('-- first event loop turn --')
     console.log('a', a())
     console.log('b', b())
   })
 })
 
-a.set(43)
-b.set(321)
+create(() => {
+  a.set(43)
+  b.set(321)
 
-// simulate an event loop turn
-setImmediate(() => {
-  console.log('-- second event loop turn --')
-  console.log('a', a())
-  console.log('b', b())
+  // simulate an event loop turn
+  setImmediate(() => {
+    console.log('-- second event loop turn --')
+    console.log('a', a())
+    console.log('b', b())
+
+    store.run(() => {
+      setImmediate(() => {
+        console.log('-- third event loop turn --')
+        console.log('a', a())
+        console.log('b', b())
+      })
+    })
+  })
 })
 ```
 
