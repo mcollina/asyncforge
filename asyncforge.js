@@ -4,28 +4,9 @@ const { AsyncLocalStorage } = require('node:async_hooks')
 
 const asyncLocalStorage = new AsyncLocalStorage()
 
-function start (config) {
+function start () {
   const store = Object.create(null)
-  store.config = config
   asyncLocalStorage.enterWith(store)
-}
-
-let forgeCounter = 0
-function forge (fn) {
-  const sym = Symbol('forge.' + (fn.name || forgeCounter++))
-  return function () {
-    let store = asyncLocalStorage.getStore()
-    if (!store) {
-      store = Object.create(null)
-      asyncLocalStorage.enterWith(store)
-    }
-    if (store[sym]) {
-      return store[sym]
-    }
-    const res = fn(store.config)
-    store[sym] = res
-    return res
-  }
 }
 
 let memoCounter = 0
@@ -65,7 +46,6 @@ function setAll (memos) {
   asyncLocalStorage.enterWith(store)
 }
 
-module.exports.start = start
-module.exports.forge = forge
 module.exports.memo = memo
+module.exports.start = start
 module.exports.setAll = setAll
