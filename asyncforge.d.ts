@@ -1,6 +1,7 @@
 declare namespace asyncforge {
   interface Store {
     run<T>(fn: () => T) : T;
+    enterWith() : void;
   }
 
   export function create () : Store;

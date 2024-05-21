@@ -34,5 +34,12 @@ create(() => {
         console.log('b', b())
       })
     })
+
+    setImmediate(() => {
+      store.enterWith()
+      console.log('-- fourth event loop turn --')
+      console.log('a', a())
+      console.log('b', b())
+    })
   })
 })

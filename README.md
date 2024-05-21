@@ -50,6 +50,13 @@ create(() => {
         console.log('b', b())
       })
     })
+
+    setImmediate(() => {
+      store.enterWith()
+      console.log('-- fourth event loop turn --')
+      console.log('a', a())
+      console.log('b', b())
+    })
   })
 })
 ```
@@ -59,25 +66,25 @@ create(() => {
 You can call the `asyncforge` functions in a type-safe way:
 
 ```ts
-import { start, memo, setAll } from "asyncforge";
+import { create, memo } from "asyncforge";
 const memoNum = memo<number>();
-
-// This is okay for TypeScript, since you're passing a number
-memoNum.set(123);
-
-// This will not build
-memoNum.set('wrong');
-
-// The `result` var will be of type `number`
-const result = memoNum()
-
 const test = memo<string>();
 
-// This is correct, since `test.key` is a `symbol`
-setAll({ [test.key]: 42 });
+const store = create()
 
-// This will fail
-setAll({ 'wrong': 42 });
+store.run(() => {
+  // This is okay for TypeScript, since you're passing a number
+  memoNum.set(123);
+
+
+  // This will not build
+  memoNum.set('wrong');
+})
+
+store.run(() => {
+  // The `result` var will be of type `number`
+  const result = memoNum()
+})
 ```
 
 ## License
