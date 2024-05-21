@@ -4,9 +4,24 @@ const { AsyncLocalStorage } = require('node:async_hooks')
 
 const asyncLocalStorage = new AsyncLocalStorage()
 
-function start () {
-  const store = Object.create(null)
-  asyncLocalStorage.enterWith(store)
+class Store {
+  #internal
+
+  constructor (internal) {
+    this.#internal = internal
+  }
+
+  run (fn) {
+    return asyncLocalStorage.run(this.#internal, fn)
+  }
+}
+
+function create (fn) {
+  const store = new Store(Object.create(null))
+  if (fn) {
+    store.run(fn)
+  }
+  return store
 }
 
 let memoCounter = 0
@@ -18,16 +33,20 @@ function memo (name) {
   function get () {
     const store = asyncLocalStorage.getStore()
     if (!store) {
-      throw new Error(`asyncforge store is not initialized for ${name}`)
+      throw new Error('asyncforge store has not been created')
     }
     return store[sym]
   }
 
   function set (value) {
-    let store = asyncLocalStorage.getStore()
-    store = Object.create(store || null)
+    const store = asyncLocalStorage.getStore()
+    if (!store) {
+      throw new Error('asyncforge store has not been created')
+    }
+    if (Object.hasOwnProperty.call(store, sym)) {
+      throw new Error(`asyncforge store already initialized for ${name}`)
+    }
     store[sym] = value
-    asyncLocalStorage.enterWith(store)
   }
 
   get.set = set
@@ -36,16 +55,5 @@ function memo (name) {
   return get
 }
 
-function setAll (memos) {
-  let store = asyncLocalStorage.getStore()
-  store = Object.create(store || null)
-  const keys = Object.getOwnPropertySymbols(memos)
-  for (const key of keys) {
-    store[key] = memos[key]
-  }
-  asyncLocalStorage.enterWith(store)
-}
-
+module.exports.create = create
 module.exports.memo = memo
-module.exports.start = start
-module.exports.setAll = setAll

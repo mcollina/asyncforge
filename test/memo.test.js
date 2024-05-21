@@ -1,101 +1,117 @@
 'use strict'
 
 const { test } = require('node:test')
-const { start, memo } = require('../')
+const { create, memo } = require('../')
 const tspl = require('@matteo.collina/tspl')
+const assert = require('node:assert')
 
 test('memo', async (t) => {
-  const p = tspl(t, { plan: 7 })
+  const p = tspl(t, { plan: 8 })
   const a = memo()
 
-  p.throws(a, /asyncforge store is not initialized for memo0/)
+  p.throws(a, /asyncforge store has not been created/)
+  p.throws(() => a.set('foo'), /asyncforge store has not been created/)
 
-  start()
-
-  p.deepStrictEqual(a(), undefined)
-  a.set({ value: 'bar' })
-  p.deepStrictEqual(a(), { value: 'bar' })
-
-  setImmediate(() => {
-    p.deepStrictEqual(a(), { value: 'bar' })
-  })
-
-  queueMicrotask(() => {
-    p.deepStrictEqual(a(), { value: 'bar' })
-  })
-
-  start()
-
-  p.deepStrictEqual(a(), undefined)
-  a.set({ value: 'baz' })
-
-  p.deepEqual(a(), { value: 'baz' })
-
-  setImmediate(() => {
-    p.deepStrictEqual(a(), { value: 'baz' })
-  })
-
-  queueMicrotask(() => {
-    p.deepStrictEqual(a(), { value: 'baz' })
-  })
-
-  await p.completed
-})
-
-test('nested', async (t) => {
-  const p = tspl(t, { plan: 5 })
-  const a = memo()
-
-  start()
-
-  p.deepStrictEqual(a(), undefined)
-  a.set({ value: 'bar' })
-  p.deepStrictEqual(a(), { value: 'bar' })
-
-  setImmediate(() => {
+  create().run(() => {
+    p.deepStrictEqual(a(), undefined)
+    a.set({ value: 'bar' })
     p.deepStrictEqual(a(), { value: 'bar' })
 
+    setImmediate(() => {
+      p.deepStrictEqual(a(), { value: 'bar' })
+    })
+
+    queueMicrotask(() => {
+      p.deepStrictEqual(a(), { value: 'bar' })
+    })
+  })
+
+  create(() => {
+    p.deepStrictEqual(a(), undefined)
     a.set({ value: 'baz' })
+
+    p.deepEqual(a(), { value: 'baz' })
 
     setImmediate(() => {
       p.deepStrictEqual(a(), { value: 'baz' })
     })
-  })
 
-  setImmediate(() => {
-    p.deepStrictEqual(a(), { value: 'bar' })
+    queueMicrotask(() => {
+      p.deepStrictEqual(a(), { value: 'baz' })
+    })
   })
 
   await p.completed
 })
 
-test('memo without start', async (t) => {
-  const p = tspl(t, { plan: 6 })
+test('overriding the store should throw', (t) => {
+  const a = memo()
+  create().run(() => {
+    a.set({ value: 'bar' })
+    assert.throws(() => {
+      a.set({ value: 'baz' })
+    }, /asyncforge store already initialized for memo\d+/)
+  })
+})
+
+test('restarted', async (t) => {
+  const p = tspl(t, { plan: 5 })
   const a = memo()
 
-  p.throws(a, /asyncforge store is not initialized for memo\d+/)
-  a.set({ value: 'bar' })
-  p.deepStrictEqual(a(), { value: 'bar' })
-
-  setImmediate(() => {
+  create().run(() => {
+    p.deepStrictEqual(a(), undefined)
+    a.set({ value: 'bar' })
     p.deepStrictEqual(a(), { value: 'bar' })
+
+    setImmediate(() => {
+      p.deepStrictEqual(a(), { value: 'bar' })
+    })
   })
 
-  queueMicrotask(() => {
+  create().run(() => {
+    p.deepStrictEqual(a(), undefined)
+
+    setImmediate(() => {
+      p.deepStrictEqual(a(), undefined)
+    })
+  })
+
+  await p.completed
+})
+
+test('run multiple times', async (t) => {
+  const p = tspl(t, { plan: 7 })
+  const a = memo()
+
+  p.throws(a, /asyncforge store has not been created/)
+
+  const store = create()
+
+  store.run(() => {
+    p.deepStrictEqual(a(), undefined)
+    a.set({ value: 'bar' })
     p.deepStrictEqual(a(), { value: 'bar' })
+
+    setImmediate(() => {
+      p.deepStrictEqual(a(), { value: 'bar' })
+    })
+
+    queueMicrotask(() => {
+      p.deepStrictEqual(a(), { value: 'bar' })
+    })
   })
 
-  p.deepStrictEqual(a(), { value: 'bar' })
-  a.set({ value: 'baz' })
+  store.run(() => {
+    p.deepStrictEqual(a(), { value: 'bar' })
+    p.throws(() => a.set({ value: 'baz' }), /asyncforge store already initialized for memo\d+/)
 
-  p.deepEqual(a(), { value: 'baz' })
+    setImmediate(() => {
+      p.deepStrictEqual(a(), { value: 'bar' })
+    })
 
-  setImmediate(() => {
-    p.deepStrictEqual(a(), { value: 'baz' })
-  })
-
-  queueMicrotask(() => {
-    p.deepStrictEqual(a(), { value: 'baz' })
+    queueMicrotask(() => {
+      p.deepStrictEqual(a(), { value: 'bar' })
+    })
   })
 
   await p.completed
