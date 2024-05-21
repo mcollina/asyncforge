@@ -14,7 +14,7 @@ npm i asyncforge
 ## Usage
 
 ```js
-import { create, memo } from 'asyncforge.js'
+import { create, memo } from 'asyncforge'
 
 const a = memo()
 const b = memo()
