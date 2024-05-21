@@ -14,6 +14,10 @@ class Store {
   run (fn) {
     return asyncLocalStorage.run(this.#internal, fn)
   }
+
+  enterWith () {
+    asyncLocalStorage.enterWith(this.#internal)
+  }
 }
 
 function create (fn) {

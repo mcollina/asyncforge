@@ -7,6 +7,7 @@ expectType<() => Store>(create);
 const store = create();
 
 expectType<number>(store.run(() => 42));
+expectType<void>(store.enterWith());
 
 // memo
 const memoNum = memo<number>();

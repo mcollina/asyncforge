@@ -116,3 +116,27 @@ test('run multiple times', async (t) => {
 
   await p.completed
 })
+
+test('enterWith', async (t) => {
+  const p = tspl(t, { plan: 5 })
+  const a = memo()
+
+  p.throws(a, /asyncforge store has not been created/)
+  p.throws(() => a.set('foo'), /asyncforge store has not been created/)
+
+  create().enterWith()
+
+  p.deepStrictEqual(a(), undefined)
+  a.set({ value: 'bar' })
+  p.deepStrictEqual(a(), { value: 'bar' })
+
+  setImmediate(() => {
+    p.deepStrictEqual(a(), { value: 'bar' })
+  })
+
+  queueMicrotask(() => {
+    p.deepStrictEqual(a(), { value: 'bar' })
+  })
+
+  await p.completed
+})
